@@ -6,7 +6,8 @@ int main(int argc, char* argv[])
 {
 	Display *display;
 	int screen;
-	Window window;
+	Window parentWindow;
+	Window childWindow;
 	XEvent event;
 
 	display = XOpenDisplay(NULL);
@@ -18,13 +19,23 @@ int main(int argc, char* argv[])
 	}
 	screen = DefaultScreen(display);
 
-	window = XCreateSimpleWindow(display, RootWindow(display, screen), 
+	/// Parent window initialization
+	parentWindow = XCreateSimpleWindow(display, RootWindow(display, screen), 
 		100, 100, 500, 300,
 		1, BlackPixel(display, screen), WhitePixel(display, screen));
 
+	XSelectInput(display, parentWindow, ExposureMask | KeyPressMask);
+	XMapWindow(display, parentWindow);
 
-	XSelectInput(display, window, ExposureMask | KeyPressMask);
-	XMapWindow(display, window);
+	/// Child window initialization
+	childWindow = XCreateSimpleWindow(display, parentWindow, 
+		20, 20, 200, 100,
+		1, BlackPixel(display, screen), WhitePixel(display, screen));
+	
+	XSelectInput(display, childWindow, ExposureMask | KeyPressMask);
+	XMapWindow(display, childWindow);
+
+	
 
 	while(1)
 	{
